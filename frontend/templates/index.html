@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Формирование профессионального профиля IT-специалиста</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #1a2129;
+    --panel-2: #232c37;
+    --border: #2f3a47;
+    --text: #dce3ea;
+    --muted: #8a97a6;
+    --accent: #4db6ac;
+    --accent-2: #ffb74d;
+    --full: #66bb6a;
+    --partial: #ffca28;
+    --related: #42a5f5;
+    --none: #ef5350;
+    --mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+    --sans: 'Inter', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--sans); background: var(--bg); color: var(--text);
+    font-size: 14px; line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, #1a2129, #232c37);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 28px;
+  }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.2px; }
+  header .sub { color: var(--muted); font-size: 12px; margin-top: 4px; font-family: var(--mono); }
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 70px); }
+  nav {
+    background: var(--panel); border-right: 1px solid var(--border); padding: 16px 0;
+  }
+  nav button {
+    display: block; width: 100%; text-align: left; padding: 12px 24px;
+    background: none; border: none; color: var(--muted); cursor: pointer;
+    font-family: var(--sans); font-size: 14px; border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  nav button:hover { background: var(--panel-2); color: var(--text); }
+  nav button.active { color: var(--accent); border-left-color: var(--accent); background: var(--panel-2); }
+  nav .nav-num { font-family: var(--mono); font-size: 11px; color: var(--accent-2); margin-right: 8px; }
+  main { padding: 28px 36px; overflow-y: auto; }
+  .section { display: none; max-width: 960px; }
+  .section.active { display: block; animation: fade 0.3s; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  h2 { font-size: 16px; margin-bottom: 6px; font-weight: 600; }
+  .hint { color: var(--muted); font-size: 12px; margin-bottom: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 18px; }
+  label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  input, textarea, select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); padding: 10px 12px; font-family: var(--sans); font-size: 14px; margin-bottom: 14px;
+  }
+  textarea { min-height: 140px; resize: vertical; font-family: var(--mono); font-size: 13px; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  button.btn {
+    background: var(--accent); color: #0f1419; border: none; border-radius: 6px;
+    padding: 10px 20px; font-weight: 600; cursor: pointer; font-size: 14px; transition: opacity 0.15s;
+  }
+  button.btn:hover { opacity: 0.85; }
+  button.btn.secondary { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); }
+  button.btn.small { padding: 5px 12px; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+  th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  tr:hover td { background: var(--panel-2); }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; font-family: var(--mono); }
+  .badge.full { background: rgba(102,187,106,0.2); color: var(--full); }
+  .badge.partial { background: rgba(255,202,40,0.2); color: var(--partial); }
+  .badge.related { background: rgba(66,165,245,0.2); color: var(--related); }
+  .badge.none { background: rgba(239,83,80,0.2); color: var(--none); }
+  .sim-bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; }
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .metric { background: var(--panel-2); border-radius: 8px; padding: 14px; text-align: center; }
+  .metric .val { font-size: 24px; font-weight: 700; color: var(--accent); font-family: var(--mono); }
+  .metric .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .row { display: flex; gap: 12px; align-items: flex-end; }
+  .row > div { flex: 1; }
+  .status { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 14px; font-family: var(--mono); }
+  .status.ok { background: rgba(102,187,106,0.15); color: var(--full); border: 1px solid rgba(102,187,106,0.3); }
+  .status.err { background: rgba(239,83,80,0.15); color: var(--none); border: 1px solid rgba(239,83,80,0.3); }
+  .source-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--panel-2); border-radius: 6px; margin-bottom: 8px; }
+  .source-item .type { font-family: var(--mono); font-size: 11px; color: var(--accent-2); }
+  .export-links a { color: var(--accent); margin-right: 14px; text-decoration: none; font-size: 13px; font-family: var(--mono); }
+  .export-links a:hover { text-decoration: underline; }
+  .empty { color: var(--muted); text-align: center; padding: 40px; font-style: italic; }
+  .chk { width: auto; margin: 0; cursor: pointer; }
+  .eval-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+  .eval-big { background: var(--panel-2); border-radius: 8px; padding: 18px; text-align: center; }
+  .eval-big .num { font-size: 36px; font-weight: 700; font-family: var(--mono); }
+  .eval-big .lbl { font-size: 11px; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .eval-section { margin-bottom: 24px; }
+  .eval-section h3 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .cat-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .cat-label { width: 70px; font-family: var(--mono); font-size: 12px; }
+  .cat-bar-bg { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .cat-bar-fg { height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .cat-nums { width: 130px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .cm-table th, .cm-table td { text-align: center; padding: 7px 14px; border-bottom: 1px solid var(--border); font-size: 12px; font-family: var(--mono); }
+  .cm-table th { color: var(--muted); font-size: 11px; }
+  .cm-diag { background: rgba(77,182,172,0.18); color: var(--accent); font-weight: 700; }
+  .cm-err  { background: rgba(239,83,80,0.10); color: var(--none); }
+  .speed-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .speed-card { background: var(--panel-2); border-radius: 6px; padding: 12px; text-align: center; }
+  .speed-card .sv { font-size: 20px; font-weight: 700; font-family: var(--mono); color: var(--accent-2); }
+  .speed-card .sl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .pair-correct td { border-left: 3px solid var(--full); }
+  .pair-wrong td { border-left: 3px solid var(--none); }
+  .model-info-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+  .model-info-item { background: var(--panel-2); border-radius: 6px; padding: 12px 16px; }
+  .model-info-item .mk { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .model-info-item .mv { font-family: var(--mono); font-size: 13px; margin-top: 4px; word-break: break-all; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Система формирования профессионального профиля IT-специалиста</h1>
+  <div class="sub">ESCO · O*NET · профстандарты — семантическое сопоставление компетенций</div>
+</header>
+
+<div class="layout">
+  <nav>
+    <button class="active" data-tab="import"><span class="nav-num">01</span>Импорт источников</button>
+    <button data-tab="sources"><span class="nav-num">02</span>Источники</button>
+    <button data-tab="match"><span class="nav-num">03</span>Сопоставление</button>
+    <button data-tab="profile"><span class="nav-num">04</span>Построение профиля</button>
+    <button data-tab="profiles"><span class="nav-num">05</span>Профили и отчёты</button>
+    <button data-tab="evalmodel"><span class="nav-num">06</span>Оценка модели</button>
+  </nav>
+
+  <main>
+    <!-- 01 ИМПОРТ -->
+    <section class="section active" id="import">
+      <h2>Импорт источников</h2>
+      <div class="hint">Загрузка компетенций из свободного текста (вакансия, образовательная программа, профстандарт) или файла. Извлечение по лингвистическим правилам.</div>
+      <div class="card">
+        <label>Название роли (опционально)</label>
+        <input id="imp-role" placeholder="Например: Machine Learning Engineer">
+        <label>Текст с требованиями / компетенциями</label>
+        <textarea id="imp-text" placeholder="Вставьте текст вакансии или описание требований. Пункты списков (- или •) распознаются как компетенции."></textarea>
+        <div class="row">
+          <div style="flex:0">
+            <button class="btn" onclick="importText()">Извлечь и сохранить</button>
+          </div>
+          <div style="flex:0">
+            <button class="btn secondary" onclick="previewText()">Предпросмотр</button>
+          </div>
+        </div>
+      </div>
+      <div id="imp-result"></div>
+    </section>
+
+    <!-- 02 ИСТОЧНИКИ -->
+    <section class="section" id="sources">
+      <h2>Загруженные источники</h2>
+      <div class="hint">Все источники данных в системе. Из их компетенций строится профиль.</div>
+      <div id="sources-list"></div>
+    </section>
+
+    <!-- 03 СОПОСТАВЛЕНИЕ -->
+    <section class="section" id="match">
+      <h2>Семантическое сопоставление компетенций</h2>
+      <div class="hint">Сравнение двух формулировок компетенций. Категоризация: полное / частичное / близкое / отсутствует.</div>
+      <div class="card">
+        <div class="row">
+          <div><label>Компетенция А</label><input id="m-a" placeholder="машинное обучение"></div>
+          <div><label>Компетенция Б</label><input id="m-b" placeholder="machine learning"></div>
+        </div>
+        <button class="btn" onclick="matchPair()">Сопоставить</button>
+      </div>
+      <div id="match-result"></div>
+    </section>
+
+    <!-- 04 ПОСТРОЕНИЕ ПРОФИЛЯ -->
+    <section class="section" id="profile">
+      <h2>Построение профессионального профиля</h2>
+      <div class="hint">Формирование интегрированного профиля по роли: отбор релевантных компетенций из всех источников, агрегирование, оценка качества.</div>
+      <div class="card">
+        <label>Профессиональная роль</label>
+        <input id="p-role" placeholder="Machine Learning Engineer">
+        <label>Описание роли / ключевые требования</label>
+        <textarea id="p-desc" style="min-height:80px" placeholder="Разработка и внедрение моделей машинного обучения, глубокое обучение, MLOps"></textarea>
+        <div class="row">
+          <div><label>Макс. компетенций</label><input id="p-topn" type="number" value="20"></div>
+          <div><label>Мин. близость</label><input id="p-minsim" type="number" step="0.05" value="0.4"></div>
+          <div style="flex:0; padding-bottom:14px"><button class="btn" onclick="buildProfile()">Построить</button></div>
+        </div>
+      </div>
+      <div id="profile-result"></div>
+    </section>
+
+    <!-- 06 ОЦЕНКА МОДЕЛИ -->
+    <section class="section" id="evalmodel">
+      <h2>Оценка ИИ-модели семантического сопоставления</h2>
+      <div class="hint">Комплексное измерение точности, надёжности и скорости модели на размеченном тестовом наборе из 26 пар компетенций (4 категории совпадения).</div>
+
+      <div id="eval-model-info"></div>
+
+      <div style="margin-bottom:18px">
+        <button class="btn" onclick="loadModelInfo()">Информация о модели</button>
+        &nbsp;
+        <button class="btn" id="eval-run-btn" onclick="runBenchmark()" style="background:var(--accent-2);color:#0f1419">Запустить оценку</button>
+        &nbsp;
+        <button class="btn" id="cmp-run-btn" onclick="runCompare()" style="background:var(--accent);color:#0f1419">Сравнить 3 модели</button>
+      </div>
+      <div id="compare-results"></div>
+
+      <div id="eval-results"></div>
+    </section>
+
+    <!-- 05 ПРОФИЛИ -->
+    <section class="section" id="profiles">
+      <h2>Сохранённые профили</h2>
+      <div class="hint">Просмотр, экспертная корректировка и экспорт профилей в PDF / DOCX / XLSX.</div>
+      <div id="profiles-list"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const API = '';
+
+// Навигация
+document.querySelectorAll('nav button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('nav button').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById(b.dataset.tab).classList.add('active');
+    if (b.dataset.tab === 'sources') loadSources();
+    if (b.dataset.tab === 'profiles') loadProfiles();
+    if (b.dataset.tab === 'evalmodel') loadModelInfo();
+  };
+});
+
+function status(html, ok=true) {
+  return `<div class="status ${ok?'ok':'err'}">${html}</div>`;
+}
+function simBar(sim) {
+  const w = Math.round(sim * 80);
+  return `<span class="sim-bar" style="width:${w}px"></span> <span style="font-family:var(--mono);font-size:12px">${sim.toFixed(3)}</span>`;
+}
+
+// 01 Импорт
+async function importText() {
+  const text = document.getElementById('imp-text').value;
+  const role = document.getElementById('imp-role').value;
+  if (!text.trim()) { alert('Введите текст'); return; }
+  const r = await fetch(API + '/api/sources/import/free-text', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({text, role_title: role})
+  });
+  const d = await r.json();
+  document.getElementById('imp-result').innerHTML = status(
+    `Источник #${d.source_id} создан. Извлечено компетенций: ${d.stats.competencies}, ролей: ${d.stats.occupations}`);
+}
+async function previewText() {
+  const text = document.getElementById('imp-text').value;
+  if (!text.trim()) { alert('Введите текст'); return; }
+  const r = await fetch(API + '/api/sources/extract/preview', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({text})
+  });
+  const d = await r.json();
+  let html = '<div class="card"><h2>Предпросмотр извлечения</h2>';
+  html += `<p class="hint">Найдено компетенций: ${d.competencies.length}</p><ul style="margin-left:18px">`;
+  d.competencies.forEach(c => html += `<li>${c}</li>`);
+  html += '</ul></div>';
+  document.getElementById('imp-result').innerHTML = html;
+}
+
+// 02 Источники
+async function loadSources() {
+  const r = await fetch(API + '/api/sources');
+  const list = await r.json();
+  const el = document.getElementById('sources-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">Источников пока нет. Импортируйте данные на вкладке 01.</div>'; return; }
+  el.innerHTML = list.map(s => `
+    <div class="source-item">
+      <div><strong>${s.name}</strong> <span class="type">[${s.source_type}]</span><br>
+        <span class="hint">${s.description||''} · ${new Date(s.created_at).toLocaleString('ru')}</span></div>
+      <button class="btn secondary small" onclick="delSource(${s.id})">Удалить</button>
+    </div>`).join('');
+}
+async function delSource(id) {
+  if (!confirm('Удалить источник и его компетенции?')) return;
+  await fetch(API + '/api/sources/' + id, {method:'DELETE'});
+  loadSources();
+}
+
+// 03 Сопоставление
+async function matchPair() {
+  const a = document.getElementById('m-a').value, b = document.getElementById('m-b').value;
+  if (!a || !b) { alert('Заполните обе компетенции'); return; }
+  const r = await fetch(API + '/api/match/pair', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({text_a:a, text_b:b})
+  });
+  const d = await r.json();
+  const labels = {full:'Полное', partial:'Частичное', related:'Близкое', none:'Отсутствует'};
+  document.getElementById('match-result').innerHTML = `
+    <div class="card">
+      <table>
+        <tr><th>Компетенция А</th><td>${d.text_a}</td></tr>
+        <tr><th>Компетенция Б</th><td>${d.text_b}</td></tr>
+        <tr><th>Близость</th><td>${simBar(d.similarity)}</td></tr>
+        <tr><th>Тип совпадения</th><td><span class="badge ${d.match_type}">${labels[d.match_type]}</span></td></tr>
+      </table>
+    </div>`;
+}
+
+// 04 Построение профиля
+async function buildProfile() {
+  const role = document.getElementById('p-role').value;
+  if (!role) { alert('Укажите роль'); return; }
+  document.getElementById('profile-result').innerHTML = '<div class="hint">Построение профиля...</div>';
+  const r = await fetch(API + '/api/profiles/build', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      role_title: role,
+      role_description: document.getElementById('p-desc').value,
+      top_n: parseInt(document.getElementById('p-topn').value),
+      min_similarity: parseFloat(document.getElementById('p-minsim').value)
+    })
+  });
+  if (!r.ok) { const e = await r.json();
+    document.getElementById('profile-result').innerHTML = status(e.detail||'Ошибка', false); return; }
+  const p = await r.json();
+  renderProfile(p, 'profile-result');
+}
+
+function renderProfile(p, target) {
+  const qm = p.quality_metrics || {};
+  let html = `<div class="card"><h2>${p.role_title}</h2>`;
+  html += `<div class="metrics">
+    <div class="metric"><div class="val">${(qm.completeness*100||0).toFixed(0)}%</div><div class="lbl">Полнота</div></div>
+    <div class="metric"><div class="val">${(qm.consistency*100||0).toFixed(0)}%</div><div class="lbl">Непротиворечивость</div></div>
+    <div class="metric"><div class="val">${(qm.applicability*100||0).toFixed(0)}%</div><div class="lbl">Применимость</div></div>
+    <div class="metric"><div class="val">${(qm.source_agreement*100||0).toFixed(0)}%</div><div class="lbl">Согл. источников</div></div>
+  </div>`;
+  html += `<table><tr><th>#</th><th>Компетенция</th><th>Тип</th><th>Уровень</th><th>Близость</th><th>Ист.</th><th>Эксперт</th></tr>`;
+  p.items.forEach((it, i) => {
+    html += `<tr>
+      <td>${i+1}</td><td>${it.title}</td>
+      <td><span class="hint">${it.competency_type}</span></td>
+      <td>${levelSelect(it.id, it.proficiency_level)}</td>
+      <td>${simBar(it.similarity)}</td>
+      <td>${it.n_sources}</td>
+      <td><input type="checkbox" class="chk" ${it.expert_confirmed?'checked':''}
+           onchange="confirmItem(${it.id}, this.checked)"></td>
+    </tr>`;
+  });
+  html += '</table></div>';
+  document.getElementById(target).innerHTML = html;
+}
+
+const LEVELS = ['unspecified','awareness','basic','intermediate','advanced','expert'];
+const LEVEL_LABELS = {
+  unspecified: '—', awareness: 'Awareness',
+  basic: 'Basic', intermediate: 'Intermediate',
+  advanced: 'Advanced', expert: 'Expert'
+};
+
+function levelSelect(id, current) {
+  const opts = LEVELS.map(l =>
+    `<option value="${l}" ${l===current?'selected':''}>${LEVEL_LABELS[l]}</option>`
+  ).join('');
+  return `<select style="width:120px;padding:3px 6px;font-size:12px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:4px"
+    onchange="updateLevel(${id}, this.value)">${opts}</select>`;
+}
+
+async function updateLevel(id, level) {
+  await fetch(API + '/api/profiles/items/' + id, {
+    method: 'PATCH', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({proficiency_level: level})
+  });
+}
+
+async function confirmItem(id, val) {
+  await fetch(API + '/api/profiles/items/' + id, {
+    method:'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({expert_confirmed: val})
+  });
+}
+
+// 05 Профили
+async function loadProfiles() {
+  const r = await fetch(API + '/api/profiles');
+  const list = await r.json();
+  const el = document.getElementById('profiles-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">Профилей пока нет. Постройте профиль на вкладке 04.</div>'; return; }
+  el.innerHTML = list.map(p => {
+    const qm = p.quality_metrics || {};
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${p.role_title}</strong> <span class="hint">· ${p.items.length} компетенций · ${new Date(p.created_at).toLocaleString('ru')}</span></div>
+        <div class="export-links">
+          <a href="${API}/api/profiles/${p.id}/export/pdf" target="_blank">PDF</a>
+          <a href="${API}/api/profiles/${p.id}/export/docx" target="_blank">DOCX</a>
+          <a href="${API}/api/profiles/${p.id}/export/xlsx" target="_blank">XLSX</a>
+          <button class="btn secondary small" onclick="viewProfile(${p.id})">Открыть</button>
+        </div>
+      </div>
+      <div id="prof-detail-${p.id}"></div>
+    </div>`;
+  }).join('');
+}
+async function viewProfile(id) {
+  const r = await fetch(API + '/api/profiles/' + id);
+  const p = await r.json();
+  const tmp = 'prof-detail-' + id;
+  const qm = p.quality_metrics || {};
+  let html = `<table style="margin-top:14px"><tr><th>#</th><th>Компетенция</th><th>Уровень</th><th>Близость</th><th>Эксперт</th></tr>`;
+  p.items.forEach((it,i) => {
+    html += `<tr><td>${i+1}</td><td>${it.title}</td>
+      <td>${levelSelect(it.id, it.proficiency_level)}</td>
+      <td>${simBar(it.similarity)}</td>
+      <td><input type="checkbox" class="chk" ${it.expert_confirmed?'checked':''} onchange="confirmItem(${it.id}, this.checked)"></td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById(tmp).innerHTML = html;
+}
+
+// Старт
+loadSources();
+
+// ── 06 Оценка модели ──────────────────────────────────────────────────────
+
+// ── Сравнение моделей ─────────────────────────────────────────────────────
+
+async function runCompare() {
+  const btn = document.getElementById('cmp-run-btn');
+  btn.textContent = 'Загрузка моделей...';
+  btn.disabled = true;
+  document.getElementById('compare-results').innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="hint" style="padding:10px 0">
+        Последовательно загружаю и оцениваю 3 модели — это займёт <strong>3–10 минут</strong>
+        (модели скачиваются при первом запуске). Не закрывай вкладку.
+      </div>
+    </div>`;
+  try {
+    const r = await fetch(API + '/api/eval/compare', { method: 'POST' });
+    if (!r.ok) { const e = await r.json(); document.getElementById('compare-results').innerHTML = status(e.detail||'Ошибка', false); return; }
+    const d = await r.json();
+    renderCompare(d);
+  } finally {
+    btn.textContent = 'Сравнить 3 модели';
+    btn.disabled = false;
+  }
+}
+
+function renderCompare(d) {
+  const catColors = { full:'var(--full)', partial:'var(--partial)', related:'var(--related)', none:'var(--none)' };
+  const cats = ['full','partial','related','none'];
+  const catLabels = { full:'Полное', partial:'Частичное', related:'Близкое', none:'Отсутствует' };
+
+  let html = '';
+
+  // ── Сводная таблица ──
+  html += `<div class="card eval-section"><h3>Сравнительная таблица моделей</h3>
+  <table>
+    <tr>
+      <th>Модель</th><th>Многоязычная</th><th>Размер</th><th>Точность</th>
+      <th>Macro F1</th><th>мс/элемент</th><th>Загрузка, с</th><th>Вывод</th>
+    </tr>`;
+
+  d.models.forEach(m => {
+    if (m.error) {
+      html += `<tr><td><strong>${m.label}</strong></td><td colspan="7" style="color:var(--none)">${m.error}</td></tr>`;
+      return;
+    }
+    const isWinner = m.id === d.winner_id;
+    const isMain   = m.is_main;
+    const accColor = m.accuracy >= 0.8 ? 'var(--full)' : m.accuracy >= 0.6 ? 'var(--partial)' : 'var(--none)';
+    const rowStyle = isMain ? 'background:rgba(77,182,172,0.07);' : '';
+    const badge    = isMain
+      ? `<span class="badge full" style="margin-left:6px">основная</span>`
+      : (isWinner ? `<span class="badge partial" style="margin-left:6px">победитель</span>` : '');
+    html += `<tr style="${rowStyle}">
+      <td><strong>${m.label}</strong>${badge}</td>
+      <td style="text-align:center">${m.multilingual ? '✓' : '✗'}</td>
+      <td style="font-family:var(--mono);font-size:12px">${m.size_mb} МБ</td>
+      <td style="font-family:var(--mono);color:${accColor};font-weight:700">${(m.accuracy*100).toFixed(1)}%</td>
+      <td style="font-family:var(--mono)">${(m.macro_f1*100).toFixed(1)}%</td>
+      <td style="font-family:var(--mono)">${m.ms_per_item}</td>
+      <td style="font-family:var(--mono)">${(m.load_time_ms/1000).toFixed(1)}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.multilingual ? (m.size_mb < 500 ? 'Оптимальный выбор' : 'Точнее, но тяжелее') : 'Плохо на кириллице'}</td>
+    </tr>`;
+  });
+  html += `</table></div>`;
+
+  // ── Визуальное сравнение Accuracy и Macro F1 ──
+  html += `<div class="card eval-section"><h3>Точность и Macro F1 — визуальное сравнение</h3>`;
+  d.models.forEach(m => {
+    if (m.error) return;
+    const isMain = m.is_main;
+    const barColor = isMain ? 'var(--accent)' : 'var(--accent-2)';
+    html += `
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">${m.label}
+        ${isMain ? '<span class="badge full" style="margin-left:6px">основная</span>' : ''}
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">Точность</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${Math.round(m.accuracy*100)}%;background:${barColor}"></div></div>
+        <div class="cat-nums">${(m.accuracy*100).toFixed(1)}%</div>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">Macro F1</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${Math.round(m.macro_f1*100)}%;background:${barColor}"></div></div>
+        <div class="cat-nums">${(m.macro_f1*100).toFixed(1)}%</div>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">Скорость</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${Math.min(100,Math.round(m.items_per_sec/3))}%;background:var(--related)"></div></div>
+        <div class="cat-nums">${m.items_per_sec} эл/с</div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // ── F1 по категориям для каждой модели ──
+  html += `<div class="card eval-section"><h3>F1-score по категориям совпадения</h3>
+  <table>
+    <tr><th>Категория</th>`;
+  d.models.forEach(m => { if (!m.error) html += `<th>${m.label.split('-').slice(-2).join('-')}</th>`; });
+  html += `</tr>`;
+  cats.forEach(cat => {
+    html += `<tr><td><span class="badge ${cat}">${catLabels[cat]}</span></td>`;
+    d.models.forEach(m => {
+      if (m.error) return;
+      const f1 = m.per_category[cat]?.f1 ?? 0;
+      const color = f1 >= 0.8 ? 'var(--full)' : f1 >= 0.5 ? 'var(--partial)' : 'var(--none)';
+      html += `<td style="font-family:var(--mono);color:${color};font-weight:600">${(f1*100).toFixed(0)}%</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</table></div>`;
+
+  // ── Вывод и обоснование ──
+  const main = d.models.find(m => m.is_main);
+  const eng  = d.models.find(m => !m.multilingual);
+  const mpnet = d.models.find(m => m.multilingual && !m.is_main && !m.error);
+  if (main && eng && mpnet) {
+    const diffAcc  = ((main.accuracy - eng.accuracy)*100).toFixed(1);
+    const diffSpeed = (mpnet.ms_per_item / main.ms_per_item).toFixed(1);
+    html += `<div class="card eval-section" style="border-color:var(--accent)">
+      <h3 style="color:var(--accent)">Обоснование выбора модели</h3>
+      <p style="font-size:13px;line-height:1.7;margin-bottom:10px">
+        <strong>${main.label}</strong> выбрана как основная модель системы по совокупности трёх критериев:
+      </p>
+      <ul style="font-size:13px;line-height:1.9;margin-left:20px">
+        <li><strong>Многоязычность:</strong> точность на ${diffAcc}% выше, чем у англоязычной ${eng.label},
+            которая плохо справляется с кириллицей и смешанными рус/англ парами компетенций.</li>
+        <li><strong>Скорость:</strong> в ${diffSpeed}× быстрее, чем ${mpnet.label} при сопоставимом
+            или лучшем качестве на задаче классификации компетенций.</li>
+        <li><strong>Компактность:</strong> ${main.size_mb} МБ против ${mpnet.size_mb} МБ у тяжёлой модели —
+            критично для деплоя на ограниченных ресурсах.</li>
+      </ul>
+    </div>`;
+  }
+
+  document.getElementById('compare-results').innerHTML = html;
+}
+
+async function loadModelInfo() {
+  const r = await fetch(API + '/api/eval/model-info');
+  if (!r.ok) { document.getElementById('eval-model-info').innerHTML = status('Модель ещё не загружена. Выполните сопоставление на вкладке 03, затем вернитесь.', false); return; }
+  const d = await r.json();
+  document.getElementById('eval-model-info').innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="model-info-grid">
+        <div class="model-info-item"><div class="mk">Модель</div><div class="mv">${d.model_name}</div></div>
+        <div class="model-info-item"><div class="mk">Устройство</div><div class="mv">${d.device.toUpperCase()}</div></div>
+        <div class="model-info-item"><div class="mk">Размерность эмбеддинга</div><div class="mv">${d.embedding_dim}</div></div>
+        <div class="model-info-item"><div class="mk">Макс. длина последовательности</div><div class="mv">${d.max_seq_length} токенов</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">Пороги категоризации:
+        <span class="badge full" style="margin-left:8px">full ≥ ${d.thresholds.full}</span>
+        <span class="badge partial" style="margin-left:6px">partial ≥ ${d.thresholds.partial}</span>
+        <span class="badge related" style="margin-left:6px">related ≥ ${d.thresholds.related}</span>
+        <span class="badge none" style="margin-left:6px">none &lt; ${d.thresholds.related}</span>
+      </div>
+    </div>`;
+}
+
+async function runBenchmark() {
+  const btn = document.getElementById('eval-run-btn');
+  btn.textContent = 'Вычисляется...';
+  btn.disabled = true;
+  document.getElementById('eval-results').innerHTML = '<div class="hint" style="padding:20px">Запускаю бенчмарк — это займёт 5–30 секунд...</div>';
+  try {
+    const r = await fetch(API + '/api/eval/benchmark', { method: 'POST' });
+    if (!r.ok) { const e = await r.json(); document.getElementById('eval-results').innerHTML = status(e.detail || 'Ошибка запуска', false); return; }
+    const d = await r.json();
+    renderBenchmark(d);
+  } finally {
+    btn.textContent = 'Запустить оценку';
+    btn.disabled = false;
+  }
+}
+
+function renderBenchmark(d) {
+  const catColors = { full: 'var(--full)', partial: 'var(--partial)', related: 'var(--related)', none: 'var(--none)' };
+  const catLabels = { full: 'Полное', partial: 'Частичное', related: 'Близкое', none: 'Отсутствует' };
+  const cats = ['full', 'partial', 'related', 'none'];
+  const accPct = (d.accuracy * 100).toFixed(1);
+  const mf1Pct = (d.macro_f1 * 100).toFixed(1);
+  const wf1Pct = (d.weighted_f1 * 100).toFixed(1);
+
+  // Цвет accuracy
+  const accColor = d.accuracy >= 0.8 ? 'var(--full)' : d.accuracy >= 0.6 ? 'var(--partial)' : 'var(--none)';
+
+  // ── Сводные метрики ──
+  let html = `
+  <div class="eval-grid">
+    <div class="eval-big"><div class="num" style="color:${accColor}">${accPct}%</div><div class="lbl">Общая точность</div><div style="font-size:11px;color:var(--muted);margin-top:4px">${d.correct} / ${d.total} пар верно</div></div>
+    <div class="eval-big"><div class="num" style="color:var(--accent)">${mf1Pct}%</div><div class="lbl">Macro F1</div><div style="font-size:11px;color:var(--muted);margin-top:4px">среднее по 4 категориям</div></div>
+    <div class="eval-big"><div class="num" style="color:var(--accent-2)">${wf1Pct}%</div><div class="lbl">Weighted F1</div><div style="font-size:11px;color:var(--muted);margin-top:4px">с учётом размера классов</div></div>
+  </div>`;
+
+  // ── Информация о модели ──
+  html += `
+  <div class="card eval-section">
+    <h3>Модель</h3>
+    <div class="model-info-grid">
+      <div class="model-info-item"><div class="mk">Название</div><div class="mv">${d.model.name}</div></div>
+      <div class="model-info-item"><div class="mk">Устройство / Размерность</div><div class="mv">${d.model.device.toUpperCase()} · ${d.model.embedding_dim}D</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">Пороги:
+      <span class="badge full" style="margin-left:8px">full ≥ ${d.thresholds.full}</span>
+      <span class="badge partial" style="margin-left:6px">partial ≥ ${d.thresholds.partial}</span>
+      <span class="badge related" style="margin-left:6px">related ≥ ${d.thresholds.related}</span>
+      <span class="badge none" style="margin-left:6px">none &lt; ${d.thresholds.related}</span>
+    </div>
+  </div>`;
+
+  // ── Скорость инференса ──
+  html += `<div class="card eval-section"><h3>Скорость инференса</h3><div class="speed-grid">`;
+  d.speed.forEach(s => {
+    html += `<div class="speed-card">
+      <div class="sv">${s.items_per_sec}</div><div class="sl">компетенций/сек</div>
+      <div style="margin-top:6px;font-size:11px;color:var(--muted)">${s.ms_per_item} мс/элемент · батч ${s.batch_size}</div>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  // ── Метрики по категориям ──
+  html += `<div class="card eval-section"><h3>Precision / Recall / F1 по категориям</h3>`;
+  cats.forEach(cat => {
+    const m = d.per_category[cat];
+    const f1w = Math.round(m.f1 * 100);
+    html += `
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span><span class="badge ${cat}" style="margin-right:8px">${catLabels[cat]}</span>
+        <span style="font-size:11px;color:var(--muted)">поддержка: ${m.support} пар · sim: ${m.sim_min}–${m.sim_max} (ср. ${m.sim_mean})</span></span>
+        <span style="font-family:var(--mono);font-size:12px">F1 ${(m.f1*100).toFixed(0)}%</span>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">Precision</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${Math.round(m.precision*100)}%;background:${catColors[cat]}"></div></div>
+        <div class="cat-nums">${(m.precision*100).toFixed(1)}%</div>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">Recall</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${Math.round(m.recall*100)}%;background:${catColors[cat]}"></div></div>
+        <div class="cat-nums">${(m.recall*100).toFixed(1)}%</div>
+      </div>
+      <div class="cat-bar-wrap">
+        <div class="cat-label">F1-score</div>
+        <div class="cat-bar-bg"><div class="cat-bar-fg" style="width:${f1w}%;background:${catColors[cat]}"></div></div>
+        <div class="cat-nums">${(m.f1*100).toFixed(1)}%</div>
+      </div>
+    </div>`;
+  });
+  html += `</div>`;
+
+  // ── Матрица ошибок ──
+  html += `<div class="card eval-section"><h3>Матрица ошибок (Confusion Matrix)</h3>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Строки — ожидаемая категория, столбцы — предсказанная моделью</div>
+  <table class="cm-table"><tr><th>Ожид. \\ Предск.</th>`;
+  cats.forEach(c => html += `<th><span class="badge ${c}">${catLabels[c]}</span></th>`);
+  html += `</tr>`;
+  cats.forEach(exp => {
+    html += `<tr><th><span class="badge ${exp}">${catLabels[exp]}</span></th>`;
+    cats.forEach(pred => {
+      const v = d.confusion_matrix[exp][pred];
+      const cls = exp === pred ? 'cm-diag' : (v > 0 ? 'cm-err' : '');
+      html += `<td class="${cls}">${v}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</table></div>`;
+
+  // ── Детальные результаты по парам ──
+  html += `<div class="card eval-section"><h3>Результаты по каждой паре</h3>
+  <table>
+    <tr><th>Компетенция A</th><th>Компетенция B</th><th>Ожидалось</th><th>Получено</th><th>Схожесть</th><th>Итог</th></tr>`;
+  d.pairs.forEach(p => {
+    const rowClass = p.correct ? 'pair-correct' : 'pair-wrong';
+    const icon = p.correct ? '✓' : '✗';
+    const iconColor = p.correct ? 'var(--full)' : 'var(--none)';
+    html += `<tr class="${rowClass}">
+      <td style="font-size:12px">${p.a}</td>
+      <td style="font-size:12px">${p.b}</td>
+      <td><span class="badge ${p.expected}">${p.expected}</span></td>
+      <td><span class="badge ${p.predicted}">${p.predicted}</span></td>
+      <td>${simBar(p.similarity)}</td>
+      <td style="color:${iconColor};font-weight:700;font-family:var(--mono)">${icon}</td>
+    </tr>`;
+  });
+  html += `</table></div>`;
+
+  document.getElementById('eval-results').innerHTML = html;
+}
+</script>
+</body>
+</html>

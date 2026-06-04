@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+data/*.db
+data/uploads/*
+data/reports/*
+data/local_model/
+data/esco/
+data/onet/
+!data/.gitkeep
