@@ -64,6 +64,9 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     s = get_settings_uncached()
+    # Railway выдаёт postgresql://, psycopg v3 требует postgresql+psycopg://
+    if s.database_url.startswith("postgresql://"):
+        object.__setattr__(s, "database_url", s.database_url.replace("postgresql://", "postgresql+psycopg://", 1))
     # Создаём нужные каталоги
     Path(s.upload_dir).mkdir(parents=True, exist_ok=True)
     Path(s.report_dir).mkdir(parents=True, exist_ok=True)
