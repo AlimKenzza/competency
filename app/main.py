@@ -58,6 +58,10 @@ def on_startup():
     init_db()
     logger.info(f"Запущено: {settings.app_name} v{settings.app_version}")
     logger.info(f"БД: {settings.database_url}")
+    logger.info("Загрузка ML-модели...")
+    from app.services.embedding_service import get_embedding_service
+    get_embedding_service()._ensure_model()
+    logger.info("ML-модель загружена.")
 
 
 @app.get("/api/health")
