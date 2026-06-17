@@ -219,11 +219,23 @@ def _ts() -> str:
 
 
 def _register_cyrillic_font() -> str:
-    """Регистрирует шрифт с поддержкой кириллицы для reportlab."""
+    """Регистрирует шрифт с поддержкой кириллицы для reportlab.
+
+    В первую очередь используется шрифт DejaVu Sans, поставляемый вместе
+    с проектом (app/assets/fonts) — он гарантированно содержит кириллицу
+    и работает одинаково локально и в облачном контейнере (Railway).
+    Системные шрифты используются как запасной вариант.
+    """
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 
+    # Если уже зарегистрирован в этом процессе — переиспользуем
+    if "CyrFont" in pdfmetrics.getRegisteredFontNames():
+        return "CyrFont"
+
+    bundled = Path(__file__).resolve().parent.parent / "assets" / "fonts" / "DejaVuSans.ttf"
     candidates = [
+        str(bundled),
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
         "/Library/Fonts/Arial.ttf",
